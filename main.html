@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Messaging</title>
+</head>
+<body>
+  <h1>Welcome to Messaging</h1>
+  <div id="userInfo"></div>
+
+  <h2>Send a Message</h2>
+  <!-- User no longer specifies sender since they're logged in -->
+  <form id="messageForm">
+    <input type="text" id="recipientId" placeholder="Recipient ID (optional)">
+    <input type="text" id="recipientFirst" placeholder="Recipient First Name (optional)">
+    <input type="text" id="recipientLast" placeholder="Recipient Last Name (optional)">
+    <input type="text" id="messageText" placeholder="Your message" required>
+    <button type="submit">Send</button>
+  </form>
+
+  <h2>Browse Message History</h2>
+  <!-- Removed the sender ID input since the logged-in user is always the sender or participant -->
+  <form id="historyForm">
+    <input type="text" id="filterRecipientId" placeholder="Filter by recipient ID (optional)">
+    <button type="submit">Load History</button>
+  </form>
+
+  <div id="messages"></div>
+
+  <script>
+    const SERVER_URL = 'http://localhost:3000';
+    const currentUserId = localStorage.getItem('currentUserId');
+    if (!currentUserId) {
+      window.location.href = 'login.html';
+    }
+
+    document.getElementById('userInfo').innerText = 'You are logged in as user ID: ' + currentUserId;
+
+    // Send message
+    document.getElementById('messageForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const sender_id = currentUserId;
+      const recipient_id = document.getElementById('recipientId').value.trim() || null;
+      const recipientFirst = document.getElementById('recipientFirst').value.trim() || null;
+      const recipientLast = document.getElementById('recipientLast').value.trim() || null;
+      const text = document.getElementById('messageText').value.trim();
+
+      fetch(`${SERVER_URL}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender_id, recipient_id, firstName: recipientFirst, lastName: recipientLast, text })
+      })
+      .then(res => res.json())
+      .then(msg => {
+        console.log('Message sent:', msg);
+        // Clear fields
+        document.getElementById('messageForm').reset();
+      })
+      .catch(err => console.error(err));
+    });
+
+    // Browse history
+    document.getElementById('historyForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const recipient_id = document.getElementById('filterRecipientId').value.trim();
+
+  let url = `${SERVER_URL}/messages?user_id=${currentUserId}`;
+  if (recipient_id) {
+    url += `&recipient_id=${recipient_id}`;
+  }
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const messagesDiv = document.getElementById('messages');
+      messagesDiv.innerHTML = '';
+      data.forEach(msg => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <p><strong>${msg.sender_first} ${msg.sender_last}</strong> -> <strong>${msg.recipient_first} ${msg.recipient_last}</strong>: ${msg.text} <em>${new Date(msg.timestamp).toLocaleString()}</em></p>
+        `;
+        messagesDiv.appendChild(div);
+      });
+    })
+    .catch(err => console.error(err));
+  });
+  </script>
+</body>
+</html>

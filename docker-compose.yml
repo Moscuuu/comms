@@ -1,0 +1,17 @@
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: my-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: messagingdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head><title>Login</title></head>
+<body>
+  <h1>Enter Your Name</h1>
+  <form id="loginForm">
+    <input type="text" id="firstName" placeholder="First Name" required>
+    <input type="text" id="lastName" placeholder="Last Name" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <script>
+    const SERVER_URL = 'http://localhost:3000';
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      
+      fetch(`${SERVER_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName })
+      })
+      .then(res => res.json())
+      .then(user => {
+        localStorage.setItem('currentUserId', user.id);
+        window.location.href = 'main.html'; // Redirect to main messaging page
+      })
+      .catch(err => console.error(err));
+    });
+  </script>
+</body>
+</html>

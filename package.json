@@ -1,0 +1,25 @@
+{
+  "name": "comms",
+  "version": "1.0.0",
+  "description": "communication system",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Moscuuu/communicationcomp.git"
+  },
+  "author": "Aleksander Moszyński/Igor Kawczyński",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Moscuuu/communicationcomp/issues"
+  },
+  "homepage": "https://github.com/Moscuuu/communicationcomp#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
